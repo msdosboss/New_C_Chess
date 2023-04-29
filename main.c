@@ -24,6 +24,7 @@ int movebishop(struct square*, int);
 int movequeen(struct square*, int);
 int moveknight(struct square*, int);
 int moveking(struct square*, int);
+int ispawncheck(struct square*, int, int);
 
 int main(){
     
@@ -43,6 +44,8 @@ int main(){
     };
     struct square *boardpst = NULL;
     boardpst = board;
+
+    printf("Is pawn check: %d\n\n", ispawncheck(boardpst, 8, 18));
 
     while(condition == 0){
         printf("\nColor = %d\n",color);
@@ -122,7 +125,6 @@ int move(struct square *boardpst, int color){
     int orca;
     if(boardpst[currentsquare].piece.piece == 1 && boardpst[currentsquare].piece.color == color){
         return movepawn(boardpst, currentsquare);
-        
     }
     if(boardpst[currentsquare].piece.piece == 5 && boardpst[currentsquare].piece.color == color){
         return moverook(boardpst, currentsquare);
@@ -161,6 +163,13 @@ int limit(int vert, int hor, struct square *boardpst, int currentsquare){
     }
 
     return ((limity * 8) + (limitx));
+}
+
+int ispawncheck(struct square *boardpst, int currentsquare, int kingsquare){
+    if(currentsquare + (7 * boardpst[currentsquare].piece.color) == kingsquare || currentsquare + (9 * boardpst[currentsquare].piece.color) == kingsquare){
+        return 1;
+    }
+    return 0;
 }
 
 void makemove(struct square *boardpst, int currentsquare, int square){
