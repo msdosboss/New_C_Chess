@@ -30,7 +30,8 @@ int isbishopcheck(struct square*, int, int);
 int isqueencheck(struct square*, int, int);
 int isknightcheck(struct square*, int, int);
 int iskingcheck(struct square*, int, int);
-int issquareincheck(struct square*, int);
+int issquareincheck(struct square*, int, int);
+int ischeckmate(struct square*, int);
 
 int main(){
     
@@ -46,12 +47,12 @@ int main(){
         {{1,5,0,0,0},{2,5,0,0,0},{3,5,0,0,0},{4,5,0,0,0},{5,5,0,0,0},{5,6,0,0,0},{5,7,0,0,0},{5,8,0,0,0}},
         {{1,6,0,0,0},{2,6,0,0,0},{3,6,0,0,0},{4,6,0,0,0},{5,6,0,0,0},{6,6,0,0,0},{7,6,0,0,0},{8,6,0,0,0}},
         {{1,7,1,-1,0},{2,7,1,-1,0},{3,7,1,-1,0},{4,7,1,-1,0},{5,7,1,-1,0},{6,7,1,-1,0},{7,7,1,-1,0},{8,7,1,-1,0}},
-        {{1,8,5,-1,0},{2,8,2,-1,0},{3,8,3,-1,0},{4,8,9,-1,0},{5,8,10,-1,0},{6,8,3,-1,0},{7,8,2,-1,0},{8,8,5,-1,0}}
+        {{1,8,5,-1,0},{2,8,10,1,0},{3,8,3,-1,0},{4,8,9,-1,0},{5,8,10,-1,0},{6,8,3,-1,0},{7,8,2,-1,0},{8,8,5,-1,0}}
     };
     struct square *boardpst = NULL;
     boardpst = board;
 
-
+    printf("\n\nischeckmate: %d\n\n", ischeckmate(boardpst, 57));                        //57
 
     while(condition == 0){
         printf("\nColor = %d\n",color);
@@ -185,6 +186,9 @@ int isrookcheck(struct square *boardpst, int currentsquare, int kingsquare){
     int rightlim = limit(0, 1, boardpst, currentsquare);
     int leftlim = limit(0, -1, boardpst, currentsquare);
 
+    if(currentsquare == kingsquare){
+        return 0;
+    }
     if(boardpst[currentsquare].x == boardpst[kingsquare].x){
             if(kingsquare <= uplim && kingsquare >= downlim){
                 return 1;
@@ -276,38 +280,38 @@ int iskingcheck(struct square *boardpst, int currentsquare, int kingsquare){
     return 0;
 }
 
-int issquareincheck(struct square *boardpst, int kingsquare){
+int issquareincheck(struct square *boardpst, int kingsquare, int color){
     for(int i = 0; i <= 63; i++){
         switch(boardpst[i].piece.piece){
             case(0):
                 break;
             case(1):
-                if(ispawncheck(boardpst, i, kingsquare) && boardpst[kingsquare].piece.color != boardpst[i].piece.color){
+                if(ispawncheck(boardpst, i, kingsquare) && color != boardpst[i].piece.color){
                     return 1;
                 }
                 break;
             case(2):
-                if(isknightcheck(boardpst, i, kingsquare) && boardpst[kingsquare].piece.color != boardpst[i].piece.color){
+                if(isknightcheck(boardpst, i, kingsquare) && color != boardpst[i].piece.color){
                     return 1;
                 }
                 break;
             case (3):
-                if(isbishopcheck(boardpst, i, kingsquare) && boardpst[kingsquare].piece.color != boardpst[i].piece.color){
+                if(isbishopcheck(boardpst, i, kingsquare) && color != boardpst[i].piece.color){
                     return 1;
                 }
                 break;
             case (5):
-                if(isrookcheck(boardpst, i, kingsquare) && boardpst[kingsquare].piece.color != boardpst[i].piece.color){
+                if(isrookcheck(boardpst, i, kingsquare) && color != boardpst[i].piece.color){
                     return 1;
                 }
                 break;
             case(9):
-                if(isqueencheck(boardpst, i, kingsquare) && boardpst[kingsquare].piece.color != boardpst[i].piece.color){
+                if(isqueencheck(boardpst, i, kingsquare) && color != boardpst[i].piece.color){
                     return 1;
                 }
                 break;
             case(10):
-                if(isqueencheck(boardpst, i, kingsquare) && boardpst[kingsquare].piece.color != boardpst[i].piece.color){
+                if(isqueencheck(boardpst, i, kingsquare) && color != boardpst[i].piece.color){
                     return 1;
                 }
                 break;
@@ -315,6 +319,30 @@ int issquareincheck(struct square *boardpst, int kingsquare){
         }
     }
     return 0;
+}
+
+int ischeckmate(struct square *boardpst, int kingsquare){
+    int flag = 0;
+    for(int i = -1; i <= 1; i++){
+        for(int j = -1; j <= 1; j++){
+            if(kingsquare + (i * 8) + j > 0 && kingsquare + (i * 8) + j < 63){
+                printf("\n\ncurrent square %d\n\n", kingsquare + (i * 8) + j);
+                if(issquareincheck(boardpst, kingsquare + (i * 8) + j, boardpst[kingsquare].piece.color)){
+                    printf("\nsquare is check");
+                    flag = flag + 1;
+                }
+            }
+            else{
+                printf("\nout of bounds");
+                flag = flag + 1;
+            }
+        }
+    }
+    if(flag > 8){
+        return 1;
+    }
+    return 0;
+    
 }
 
 void makemove(struct square *boardpst, int currentsquare, int square){
