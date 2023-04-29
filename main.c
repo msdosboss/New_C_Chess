@@ -25,6 +25,12 @@ int movequeen(struct square*, int);
 int moveknight(struct square*, int);
 int moveking(struct square*, int);
 int ispawncheck(struct square*, int, int);
+int isrookcheck(struct square*, int, int);
+int isbishopcheck(struct square*, int, int);
+int isqueencheck(struct square*, int, int);
+int isknightcheck(struct square*, int, int);
+int iskingcheck(struct square*, int, int);
+int issquareincheck(struct square*, int);
 
 int main(){
     
@@ -38,14 +44,14 @@ int main(){
         {{1,3,0,0,0},{2,3,0,0,0},{3,3,0,0,0},{4,3,0,0,0},{5,3,0,0,0},{6,3,0,0,0},{7,3,0,0,0},{8,3,0,0,0}},
         {{1,4,0,0,0},{2,4,0,0,0},{3,4,0,0,0},{4,4,0,0,0},{5,4,0,0,0},{6,4,{0,0,0}},{7,4,0,0,0},{8,4,0,0,0}},
         {{1,5,0,0,0},{2,5,0,0,0},{3,5,0,0,0},{4,5,0,0,0},{5,5,0,0,0},{5,6,0,0,0},{5,7,0,0,0},{5,8,0,0,0}},
-        {{1,6,0,0,0},{2,6,0,0,0},{3,6,0,0,0},{4,6,1,1,0},{5,6,0,0,0},{6,6,0,0,0},{7,6,0,0,0},{8,6,0,0,0}},
+        {{1,6,0,0,0},{2,6,0,0,0},{3,6,0,0,0},{4,6,0,0,0},{5,6,0,0,0},{6,6,0,0,0},{7,6,0,0,0},{8,6,0,0,0}},
         {{1,7,1,-1,0},{2,7,1,-1,0},{3,7,1,-1,0},{4,7,1,-1,0},{5,7,1,-1,0},{6,7,1,-1,0},{7,7,1,-1,0},{8,7,1,-1,0}},
         {{1,8,5,-1,0},{2,8,2,-1,0},{3,8,3,-1,0},{4,8,9,-1,0},{5,8,10,-1,0},{6,8,3,-1,0},{7,8,2,-1,0},{8,8,5,-1,0}}
     };
     struct square *boardpst = NULL;
     boardpst = board;
 
-    printf("Is pawn check: %d\n\n", ispawncheck(boardpst, 8, 18));
+
 
     while(condition == 0){
         printf("\nColor = %d\n",color);
@@ -172,6 +178,145 @@ int ispawncheck(struct square *boardpst, int currentsquare, int kingsquare){
     return 0;
 }
 
+int isrookcheck(struct square *boardpst, int currentsquare, int kingsquare){
+    
+    int uplim = limit(1, 0, boardpst, currentsquare);
+    int downlim = limit(-1, 0, boardpst, currentsquare);
+    int rightlim = limit(0, 1, boardpst, currentsquare);
+    int leftlim = limit(0, -1, boardpst, currentsquare);
+
+    if(boardpst[currentsquare].x == boardpst[kingsquare].x){
+            if(kingsquare <= uplim && kingsquare >= downlim){
+                return 1;
+            }
+        }
+        else if(boardpst[currentsquare].y == boardpst[kingsquare].y){
+            if(kingsquare <= rightlim && kingsquare >= leftlim){
+                return 1;
+            }
+        }
+        return 0;
+}
+
+int isbishopcheck(struct square *boardpst, int currentsquare, int kingsquare){
+    int uprightlim = limit(1, 1, boardpst, currentsquare);
+    int downrightlim = limit(-1, 1, boardpst, currentsquare);
+    int upleftlim = limit(1, -1, boardpst, currentsquare);
+    int downleftlim = limit(-1, -1, boardpst, currentsquare);
+
+    for(int i = 1; currentsquare + (i * 8) + i <= uprightlim || currentsquare - (i * 8) + i >= downrightlim || currentsquare + (i * 8) - i <= upleftlim || currentsquare - (i * 8) - i >= downleftlim; i++){
+        if(kingsquare == currentsquare + (i * 8) + i &&  kingsquare <= uprightlim){
+            return 1;
+        }
+        if(kingsquare == currentsquare - (i * 8) + i &&  kingsquare >= downrightlim){
+            return 1;
+        }
+        if(kingsquare == currentsquare + (i * 8) - i &&  kingsquare <= upleftlim){
+            return 1;
+        }
+        if(kingsquare == currentsquare - (i * 8) - i &&  kingsquare >= downleftlim){
+            return 1;
+        }
+    }
+    return 0;
+
+}
+
+int isqueencheck(struct square *boardpst, int currentsquare, int kingsquare){
+    int uplim = limit(1, 0, boardpst, currentsquare);
+    int downlim = limit(-1, 0, boardpst, currentsquare);
+    int rightlim = limit(0, 1, boardpst, currentsquare);
+    int leftlim = limit(0, -1, boardpst, currentsquare);
+    int uprightlim = limit(1, 1, boardpst, currentsquare);
+    int downrightlim = limit(-1, 1, boardpst, currentsquare);
+    int upleftlim = limit(1, -1, boardpst, currentsquare);
+    int downleftlim = limit(-1, -1, boardpst, currentsquare);
+
+    if(boardpst[currentsquare].x == boardpst[kingsquare].x){
+            if(kingsquare <= uplim && kingsquare >= downlim){
+                return 1;
+            }
+        }
+        else if(boardpst[currentsquare].y == boardpst[kingsquare].y){
+            if(kingsquare <= rightlim && kingsquare >= leftlim){
+                return 1;
+            }
+        }
+    
+
+    for(int i = 1; currentsquare + (i * 8) + i <= uprightlim || currentsquare - (i * 8) + i >= downrightlim || currentsquare + (i * 8) - i <= upleftlim || currentsquare - (i * 8) - i >= downleftlim; i++){
+        if(kingsquare == currentsquare + (i * 8) + i &&  kingsquare <= uprightlim){
+            return 1;
+        }
+        if(kingsquare == currentsquare - (i * 8) + i &&  kingsquare >= downrightlim){
+            return 1;
+        }
+        if(kingsquare == currentsquare + (i * 8) - i &&  kingsquare <= upleftlim){
+            return 1;
+        }
+        if(kingsquare == currentsquare - (i * 8) - i &&  kingsquare >= downleftlim){
+            return 1;
+        }
+    }
+    return 0;
+
+}
+
+int isknightcheck(struct square *boardpst, int currentsquare, int kingsquare){
+    if(currentsquare == kingsquare + 10 || currentsquare == kingsquare + 6 || currentsquare == kingsquare + 17 || currentsquare == kingsquare + 15 || currentsquare == kingsquare - 6 || currentsquare == kingsquare - 10 || currentsquare == kingsquare - 15 || currentsquare == kingsquare - 17){
+        return 1;
+    }
+    return 0;
+}
+
+int iskingcheck(struct square *boardpst, int currentsquare, int kingsquare){
+    if((boardpst[currentsquare].x + 1 == boardpst[kingsquare].x || boardpst[currentsquare].x - 1 == boardpst[kingsquare].x || boardpst[currentsquare].x == boardpst[kingsquare].x) && (boardpst[currentsquare].y + 1 == boardpst[kingsquare].y || boardpst[currentsquare].y - 1 == boardpst[kingsquare].y || boardpst[currentsquare].y == boardpst[kingsquare].y)){
+        return 1;
+    }
+    return 0;
+}
+
+int issquareincheck(struct square *boardpst, int kingsquare){
+    for(int i = 0; i <= 63; i++){
+        switch(boardpst[i].piece.piece){
+            case(0):
+                break;
+            case(1):
+                if(ispawncheck(boardpst, i, kingsquare) && boardpst[kingsquare].piece.color != boardpst[i].piece.color){
+                    return 1;
+                }
+                break;
+            case(2):
+                if(isknightcheck(boardpst, i, kingsquare) && boardpst[kingsquare].piece.color != boardpst[i].piece.color){
+                    return 1;
+                }
+                break;
+            case (3):
+                if(isbishopcheck(boardpst, i, kingsquare) && boardpst[kingsquare].piece.color != boardpst[i].piece.color){
+                    return 1;
+                }
+                break;
+            case (5):
+                if(isrookcheck(boardpst, i, kingsquare) && boardpst[kingsquare].piece.color != boardpst[i].piece.color){
+                    return 1;
+                }
+                break;
+            case(9):
+                if(isqueencheck(boardpst, i, kingsquare) && boardpst[kingsquare].piece.color != boardpst[i].piece.color){
+                    return 1;
+                }
+                break;
+            case(10):
+                if(isqueencheck(boardpst, i, kingsquare) && boardpst[kingsquare].piece.color != boardpst[i].piece.color){
+                    return 1;
+                }
+                break;
+
+        }
+    }
+    return 0;
+}
+
 void makemove(struct square *boardpst, int currentsquare, int square){
     boardpst[currentsquare].piece.totalmoves++;
     boardpst[square].piece = boardpst[currentsquare].piece;
@@ -267,15 +412,13 @@ int movebishop(struct square *boardpst, int currentsquare){
     int upleftlim = limit(1, -1, boardpst, currentsquare);
     int downleftlim = limit(-1, -1, boardpst, currentsquare);
 
-    int flag = 0;
-
     while(1){
         printf("where would you like to move your bishop that is on offset %d: ?", currentsquare);
         square = getmove();
         if(square == -1){
             return -1;
         }
-        for(int i = 1; currentsquare + (i * 8) + i <= uprightlim || currentsquare - (i * 8) + i >= downrightlim || currentsquare + (i * 8) - i <= upleftlim || currentsquare - (i * 8) - i <= downleftlim; i++){
+        for(int i = 1; currentsquare + (i * 8) + i <= uprightlim || currentsquare - (i * 8) + i >= downrightlim || currentsquare + (i * 8) - i <= upleftlim || currentsquare - (i * 8) - i >= downleftlim; i++){
             
             if(square == currentsquare + (i * 8) + i &&  square <= uprightlim){
                 makemove(boardpst, currentsquare, square);
@@ -340,7 +483,7 @@ int movequeen(struct square *boardpst, int currentsquare){
         }
         while(1){
 
-            for(int i = 1; currentsquare + (i * 8) + i <= uprightlim || currentsquare - (i * 8) + i >= downrightlim || currentsquare + (i * 8) - i <= upleftlim || currentsquare - (i * 8) - i <= downleftlim; i++){
+            for(int i = 1; currentsquare + (i * 8) + i <= uprightlim || currentsquare - (i * 8) + i >= downrightlim || currentsquare + (i * 8) - i <= upleftlim || currentsquare - (i * 8) - i >= downleftlim; i++){
             
                 if(square == currentsquare + (i * 8) + i &&  square <= uprightlim){
                     makemove(boardpst, currentsquare, square);
