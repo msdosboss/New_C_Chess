@@ -3,6 +3,9 @@
 int whitekingpst = 4;
 int blackkingpst = 60;
 
+
+
+
 struct piecestruc {
         int piece;
         int color;
@@ -14,6 +17,11 @@ struct piecestruc {
     int y;
     struct piecestruc piece;      
     };
+
+
+struct square *lastpiecemoved = NULL;
+
+
 
 void printboard(struct square*);
 int getmove();
@@ -54,6 +62,7 @@ int main(){
     };
     struct square *boardpst = NULL;
     boardpst = board;
+    lastpiecemoved = board;
 
 
 
@@ -448,6 +457,8 @@ void makemove(struct square *boardpst, int currentsquare, int square){
     boardpst[square].piece = boardpst[currentsquare].piece;
     boardpst[currentsquare].piece.piece = 0;
     boardpst[currentsquare].piece.color = 0;
+    lastpiecemoved = &boardpst[square].piece;
+
 }
 
 
@@ -481,7 +492,17 @@ int movepawn(struct square *boardpst, int currentsquare){
                 continue;
             }
         }
-        else if((square == currentsquare + (7 * boardpst[currentsquare].piece.color) || square == currentsquare + (9 * boardpst[currentsquare].piece.color)) && boardpst[currentsquare].piece.color != boardpst[square].piece.color && boardpst[square].piece.piece > 0){
+        else if((square == currentsquare + (7 * boardpst[currentsquare].piece.color) || square == currentsquare + (9 * boardpst[currentsquare].piece.color)) && ((boardpst[currentsquare].piece.color != boardpst[square].piece.color && boardpst[square].piece.piece > 0) || (boardpst[currentsquare + (1)].piece.piece == 1 && boardpst[currentsquare + (1)].piece.totalmoves == 1 && boardpst[currentsquare + (1)].piece.color != boardpst[currentsquare].piece.color && lastpiecemoved == &boardpst[currentsquare + 1].piece) || (boardpst[currentsquare - (1)].piece.piece == 1 && boardpst[currentsquare - (1)].piece.totalmoves == 1 && boardpst[currentsquare - (1)].piece.color != boardpst[currentsquare].piece.color && lastpiecemoved == &boardpst[currentsquare - 1].piece))){
+            if((boardpst[currentsquare + (1)].piece.piece == 1 && boardpst[currentsquare + (1)].piece.totalmoves == 1 && boardpst[currentsquare + (1)].piece.color != boardpst[currentsquare].piece.color && lastpiecemoved == &boardpst[currentsquare + 1].piece) || (boardpst[currentsquare - 1].piece.piece == 1 && boardpst[currentsquare - 1].piece.totalmoves == 1 && boardpst[currentsquare - 1].piece.color != boardpst[currentsquare].piece.color && lastpiecemoved == &boardpst[currentsquare - 1].piece)){
+                printf("orca\n");
+                boardpst[currentsquare].piece.totalmoves++;
+                boardpst[square].piece = boardpst[currentsquare].piece;
+                boardpst[square - (8 * boardpst[currentsquare].piece.color)].piece.piece = 0;
+                boardpst[square - (8 * boardpst[currentsquare].piece.color)].piece.color = 0;
+                boardpst[currentsquare].piece.piece = 0;
+                boardpst[currentsquare].piece.color = 0;
+                break;
+            }
             makemove(boardpst, currentsquare, square);
             break;
         }
@@ -659,12 +680,24 @@ int moveking(struct square *boardpst, int currentsquare){
             printf("that move would put you in check not a legal move");
         }
         else{
-            if(boardpst[currentsquare].piece.totalmoves == 0 && boardpst[currentsquare + 3].piece.totalmoves == 0 && currentsquare + 2 == square && boardpst[currentsquare + 1].piece.piece == 0 && boardpst[currentsquare + 2].piece.piece == 0){
+            if(boardpst[currentsquare].piece.totalmoves == 0 && boardpst[currentsquare + 3].piece.totalmoves == 0 && currentsquare + 2 == square && boardpst[currentsquare + 1].piece.piece == 0 && boardpst[currentsquare + 2].piece.piece == 0 && !issquareincheck(boardpst,currentsquare + 1,boardpst[currentsquare].piece.color) && !issquareincheck(boardpst,currentsquare + 2,boardpst[currentsquare].piece.color)){
+                if(boardpst[currentsquare].piece.color == 1){
+                    whitekingpst = square;
+                }
+                else{
+                    blackkingpst = square;
+                }
                 makemove(boardpst, currentsquare, square);
                 makemove(boardpst, currentsquare + 3, square - 1);
                 return 0;
             }
-            if(boardpst[currentsquare].piece.totalmoves == 0 && boardpst[currentsquare - 4].piece.totalmoves == 0 && currentsquare - 2 == square && boardpst[currentsquare - 1].piece.piece == 0 && boardpst[currentsquare - 2].piece.piece == 0 && boardpst[currentsquare - 3].piece.piece == 0){
+            if(boardpst[currentsquare].piece.totalmoves == 0 && boardpst[currentsquare - 4].piece.totalmoves == 0 && currentsquare - 2 == square && boardpst[currentsquare - 1].piece.piece == 0 && boardpst[currentsquare - 2].piece.piece == 0 && boardpst[currentsquare - 3].piece.piece == 0 && !issquareincheck(boardpst,currentsquare - 1,boardpst[currentsquare].piece.color) && !issquareincheck(boardpst,currentsquare - 2,boardpst[currentsquare].piece.color) && !issquareincheck(boardpst,currentsquare - 3,boardpst[currentsquare].piece.color)){
+                if(boardpst[currentsquare].piece.color == 1){
+                    whitekingpst = square;
+                }
+                else{
+                    blackkingpst = square;
+                }
                 makemove(boardpst, currentsquare, square);
                 makemove(boardpst, currentsquare + 3, square - 1);
                 return 0;
