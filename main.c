@@ -19,7 +19,7 @@ struct piecestruc {
     };
 
 
-struct square *lastpiecemoved = NULL;
+struct square (*lastpiecemoved)[8] = NULL;
 
 
 
@@ -399,32 +399,28 @@ int issquareincheck(struct square *boardpst, int kingsquare, int color){
 }
 
 int ischeckmate(struct square *boardpst, int kingsquare){
-    int flag = 0;
     for(int i = -1; i <= 1; i++){
         for(int j = -1; j <= 1; j++){
             if(kingsquare + (i * 8) + j > 0 && kingsquare + (i * 8) + j < 63){
                 if(boardpst[kingsquare + (i * 8) + j].piece.color == boardpst[kingsquare].piece.color){
-                    if(kingsquare + (i * 8) + j == kingsquare){
-
-                    }
-                    else{
-                        flag = flag + 1;
                         continue;
-                    }
                 }
                 if(issquareincheck(boardpst, kingsquare + (i * 8) + j, boardpst[kingsquare].piece.color)){
-                    flag = flag + 1;
+                    switch(boardpst[kingsquare + (i * 8) + j].piece.piece){
+                        case (3):
+                            
+                        case (5):
+                        case (9):
+
+                    }
                 }
-            }
-            else{
-                flag = flag + 1;
+                else{
+                    return 0;
+                }
             }
         }
     }
-    if(flag > 8){
         return 1;
-    }
-    return 0;
     
 }
 
